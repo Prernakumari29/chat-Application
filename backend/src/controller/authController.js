@@ -5,9 +5,11 @@ const apiResponse = require("../utils/apiResponse");
 const asyncHandler = require("../utils/asyncHandler");
 const bcrypt = require("bcrypt");
 const { generateAccessToken, generateRefreshToken } = require("../utils/generateToken");
+const sendToImage = require("../service/storage.service");
 
 const registerUser = asyncHandler(async(req,res)=>{
-  let {name , email ,password , pic} = req.body;
+  let {name , email ,password } = req.body;
+  let file = req.file;
 
   if(!name || !email || !password){
     throw new apiError(400 , "all fields are required")
@@ -18,12 +20,20 @@ const registerUser = asyncHandler(async(req,res)=>{
     throw new apiError(400 , "user already existed")
   }
 
+  let imageUrl = "";
+
+  if(file){
+    const uploadImage = await sendToImage(file.buffer , file.originalname)
+    imageUrl = uploadImage.url;
+  }
+  
+
   const hashpass = await bcrypt.hash(password , 10)
   const user = await UserModel.create({
     name ,
     email,
     password:hashpass,
-    pic
+    pic:imageUrl
   })
 
   let accessToken = generateAccessToken(user._id)
@@ -97,7 +107,7 @@ const loginUser = asyncHandler(async(req,res)=>{
 
     return res
     .status(200)
-    .json(new apiResponse("welcome back"))
+    .json(new apiResponse("welcome back" , user))
 })
 
 module.exports = {

@@ -1,13 +1,23 @@
 import React, { useState } from "react";
 import {useForm} from "react-hook-form";
+import apiInstance from "../../services/Api";
+
 
 const Register = () => {
   const [showpassword , setShowpassword] = useState(false)
   const {handleSubmit , register , reset} =useForm();
 
-  const submit = (data)=>{
-    console.log(data)
-    reset();
+
+
+  const submit = async(data)=>{
+    try {
+      const res = await apiInstance.post("/auth/register" , data)
+      alert(res.data.message)
+      reset();
+
+    } catch (error) {
+      alert(error.res?.data?.message || "something went wrong")
+    }
   }
   return (
     <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8">

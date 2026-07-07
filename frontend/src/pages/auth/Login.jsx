@@ -1,14 +1,23 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import apiInstance from "../../services/Api";
+import { useNavigate } from "react-router";
 
 const Login = () => {
 
   const [showpassword , setShowpassword] = useState(false)
   const {handleSubmit , register , reset} = useForm();
+  const navigate = useNavigate()
 
-  const submit = (data)=>{
-    console.log(data)
-    reset();
+  const submit = async(data)=>{
+    try {
+      const res = await apiInstance.post("/auth/login" , data);
+      alert(res.data.message);
+      reset();
+      navigate("/chat")
+    } catch (error) {
+      alert(error.res?.data?.message || "something went wrong")
+    }
   }
   return (
     <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8">
