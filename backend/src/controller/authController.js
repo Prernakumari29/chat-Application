@@ -110,7 +110,27 @@ const loginUser = asyncHandler(async(req,res)=>{
     .json(new apiResponse("welcome back" , user))
 })
 
+// ----------------------------------------search user-------------------------------------------
+
+const searchUserController = asyncHandler(async(req, res)=>{
+  
+  const keyword = req.query.search ? {
+   $or: [
+    {name : {$regex: req.query.search , $options: "i"}},
+    {email : {$regex: req.query.search , $options:"i"}},
+   ]
+  }
+  :{};
+
+  const users = await UserModel.find(keyword).find({_id: {$ne: req.user._id}});
+
+  return res
+  .status(200)
+  .json(new apiResponse("searched user" , users))
+});
+
 module.exports = {
     registerUser,
-    loginUser
+    loginUser,
+    searchUserController
 }

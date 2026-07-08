@@ -23,7 +23,7 @@ const Register = () => {
     <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8">
      
 
-      <form onSubmit={handleSubmit(submit)} className="space-y-3">
+      <form onSubmit={handleSubmit(submit)} className="space-y-3" encType="multipart/form-data">
         {/* Name */}
         <div className="flex flex-col">
           <label

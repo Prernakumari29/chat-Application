@@ -6,6 +6,7 @@ const connected = require("./src/config/db");
 const errormiddleware = require("./src/middleware/error.middleware");
 const authRoutes = require("./src/routes/userRoutes")
 const ImageRoute = require("./src/routes/imageRoutes")
+const chatRoute = require("./src/routes/chatRoutes")
 const cookieParser = require("cookie-parser")
 
 const app = express();
@@ -28,6 +29,7 @@ app.get("/api/chats" , (req , res)=>{
 
 app.use("/api/auth" , authRoutes)
 app.use("/api", ImageRoute)
+app.use("/api" , chatRoute )
 
 
 app.use(errormiddleware)
