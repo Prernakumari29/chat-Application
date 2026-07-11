@@ -1,28 +1,28 @@
-import React, { useEffect, useState } from 'react'
-import axios  from 'axios'
+import React from 'react'
+import bgImage from "../assets/bgImage.jpg"
+import { useContext } from 'react'
+import {ChatContext} from "../context/ChatProvider"
+import SideDrawer from '../components/miscellaneous/SideDrawer'
+import MyChats from '../components/miscellaneous/MyChats'
+import ChatBox from '../components/miscellaneous/ChatBox'
+
 
 const ChatPage = () => {
 
-    const [chats , setChats] = useState([])
-
-    const fetchChats = async()=>{
-    const response = await axios.get("http://localhost:3000/api/chats" , {withCredentials:true} )
-    console.log(response.data)
-    setChats(response.data)
-  }
-
-  useEffect(()=>{
-    fetchChats();
-  },[])
-    
+  let {user } = useContext(ChatContext)
   return (
-    <div>
-      <h1>here you will see chatpage</h1>
-      {
-        chats.map((chat)=>{
-          return <div key={chat._id}>{chat.chatName}</div>
-        })
-      }
+     <div className='min-h-screen  bg-cover bg-center' style={{ backgroundImage: `url(${bgImage})` }}>
+    
+     <div >
+       {user && <SideDrawer /> }
+       <div className='flex justify-between gap-5 p-4'>
+        {user && <MyChats />}
+       {user && <ChatBox />}
+       </div>
+
+     </div>
+      
+      
     </div>
   )
 }

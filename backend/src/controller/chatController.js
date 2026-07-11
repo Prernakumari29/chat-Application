@@ -101,13 +101,91 @@ const groupChatController = async(req,res)=>{
       .json({
         fullGroupChat
       })
-
- 
-  
 }
+
+// ------------------------------------------------rename route-----------------------------------
+
+const rename = async(req,res)=>{
+  const {chatId , chatName} = req.body;
+
+  const updatedChat = await ChatModel.findByIdAndUpdate(
+    chatId,
+    {
+      chatName,
+    },{
+      new:true,
+    }
+  )
+  .populate("users" , "-password")
+  .populate("groupAdmin" , "-password")
+
+  if(!updatedChat){
+    throw new apiError(404, "chat Not found")
+  } else{
+    res.json(updatedChat);
+  }
+}
+
+// --------------------------------------------------add to group---------------------------
+const addToGroup = async(req,res) =>{
+  const {chatId , userId} = req.body;
+
+  const added = await ChatModel.findByIdAndUpdate(
+     chatId,
+  {
+    $push: { users : userId},
+  },
+  {
+    new:true
+  }
+  )
+  .populate("users" , "-password")
+  .populate("groupAdmin" , "-password")
+
+  if(!added){
+    throw new apiError(404, "chat Not found")
+  } else{
+    res.json(added);
+  }
+}
+
+// -------------------------------------remove from the group-------------------
+
+const removeFromGroup = async(req,res)=>{
+const {chatId , userId} = req.body;
+
+  const removed = await ChatModel.findByIdAndUpdate(
+     chatId,
+  {
+    $pull: { users : userId},
+  },
+  {
+    new:true
+  }
+  )
+  .populate("users" , "-password")
+  .populate("groupAdmin" , "-password")
+
+  if(!removed){
+    throw new apiError(404, "chat Not found")
+  } else{
+    res.json(removed);
+  }
+
+
+}
+
+
+
+
+
+
 
 module.exports = {
   accessChat,
   fetchChat,
-  groupChatController
+  groupChatController,
+  rename,
+  addToGroup,
+  removeFromGroup
 }

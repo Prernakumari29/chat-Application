@@ -12,11 +12,16 @@ const Login = () => {
   const submit = async(data)=>{
     try {
       const res = await apiInstance.post("/auth/login" , data);
-      alert(res.data.message);
+      
+      localStorage.setItem(
+  "userInfo",
+  JSON.stringify(res.data.data)
+);
+alert(res.data.message);
       reset();
       navigate("/chat")
     } catch (error) {
-      alert(error.res?.data?.message || "something went wrong")
+      alert(error.response?.data?.message || "something went wrong")
     }
   }
   return (

@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
     },
     pic:{
         type:String,
-        default:"https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"
+        default:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpy8fSabmG_TcZLtTTiedr81bYgG0DdIkT2lpRKLgl5Q&s=10"
 
     }
 } , {timeseries:true})

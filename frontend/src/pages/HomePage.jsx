@@ -3,10 +3,23 @@ import bgImage from "../assets/bgImage.jpg"
 import Login from './auth/Login'
 import { useState } from 'react'
 import Register from './auth/Register'
+import { useNavigate } from 'react-router'
+import { useEffect } from 'react'
 
 const HomePage = () => {
+
     const [toggle , setToggle] = useState(true)
     const [active , setActive] = useState("login")
+
+    const navigate = useNavigate();
+
+    useEffect(()=>{
+      const user = JSON.parse(localStorage.getItem("userInfo"));
+
+      if(user){
+        navigate("/chat")
+      }
+    },[navigate])
   return (
     <div className='min-h-screen flex justify-center items-center bg-cover bg-center' style={{ backgroundImage: `url(${bgImage})` }}>
       <div className='flex flex-col items-center gap-3  '>

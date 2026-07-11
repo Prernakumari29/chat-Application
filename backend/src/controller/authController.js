@@ -34,7 +34,7 @@ const registerUser = asyncHandler(async(req,res)=>{
     name ,
     email,
     password:hashpass,
-    pic:imageUrl
+    ...(imageUrl && { pic: imageUrl })
   })
 
   let accessToken = generateAccessToken(user._id)
@@ -130,33 +130,10 @@ const searchUserController = asyncHandler(async(req, res)=>{
   .json(new apiResponse("searched user" , users))
 });
 
-// ------------------------------------------------rename route-----------------------------------
-
-const rename = async(req,res)=>{
-  const {chatId , chatName} = req.body;
-
-  const updatedChat = await ChatModel.findByIdAndUpdate(
-    chatId,
-    {
-      chatName,
-    },{
-      new:true,
-    }
-  )
-  .populate("users" , "-password")
-  .populate("groupAdmin" , "-password")
-
-  if(!updatedChat){
-    throw new apiError(404, "chat Not found")
-  } else{
-    res.json(updatedChat);
-  }
-
-}
 
 module.exports = {
     registerUser,
     loginUser,
     searchUserController,
-    rename
+    
 }
