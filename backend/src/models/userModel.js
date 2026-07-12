@@ -22,8 +22,16 @@ const userSchema = new mongoose.Schema({
         type:String,
         default:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpy8fSabmG_TcZLtTTiedr81bYgG0DdIkT2lpRKLgl5Q&s=10"
 
+    },
+    about:{
+        type:String,
+        default:"Hey! I am using quick Chat"
+    },
+    mobile:{
+        type:String,
+        default:""
     }
-} , {timeseries:true})
+} , {timestamps:true})
 
 const UserModel = mongoose.model("user" , userSchema)
 module.exports = UserModel;

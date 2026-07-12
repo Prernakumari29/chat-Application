@@ -1,15 +1,14 @@
 import React from 'react'
 import bgImage from "../assets/bgImage.jpg"
-import { useContext } from 'react'
-import {ChatContext} from "../context/ChatProvider"
 import SideDrawer from '../components/miscellaneous/SideDrawer'
 import MyChats from '../components/miscellaneous/MyChats'
 import ChatBox from '../components/miscellaneous/ChatBox'
+import { useSelector } from 'react-redux'
 
 
 const ChatPage = () => {
 
-  let {user } = useContext(ChatContext)
+  const user = useSelector((state)=> state.auth.user)
   return (
      <div className='min-h-screen  bg-cover bg-center' style={{ backgroundImage: `url(${bgImage})` }}>
     

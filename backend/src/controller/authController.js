@@ -90,7 +90,7 @@ const loginUser = asyncHandler(async(req,res)=>{
 
     const user = await UserModel
     .findById(isexisted._id)
-    .select("-password -refreshToken")
+    .select("-password -refreshToken -mobile")
 
     res.cookie("accessToken" , accessToken,{
         httpOnly:true,
@@ -130,10 +130,36 @@ const searchUserController = asyncHandler(async(req, res)=>{
   .json(new apiResponse("searched user" , users))
 });
 
+// ----------------------------------------Update Profile------------------------------------
+
+const UpdateProfile = async(req, res)=>{
+
+  const {name ,about , mobile} = req.body;
+
+  const updateData = {};
+
+  if(name) updateData.name = name;
+  if(about) updateData.about = about;
+  if(mobile) updateData.mobile = mobile;
+
+  const user = await UserModel.findByIdAndUpdate(
+    req.user._id,
+    updateData,
+    {
+      new:true
+    }
+  )
+
+  return res
+  .status(200)
+  .json(new apiResponse("profile updated" , user))
+
+}
 
 module.exports = {
     registerUser,
     loginUser,
     searchUserController,
+    UpdateProfile
     
 }

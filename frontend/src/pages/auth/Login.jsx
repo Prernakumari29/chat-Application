@@ -2,22 +2,23 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import apiInstance from "../../services/Api";
 import { useNavigate } from "react-router";
+import { useDispatch } from "react-redux";
+import { setUser } from "../../features/authSlice";
 
 const Login = () => {
 
   const [showpassword , setShowpassword] = useState(false)
   const {handleSubmit , register , reset} = useForm();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const submit = async(data)=>{
     try {
       const res = await apiInstance.post("/auth/login" , data);
-      
-      localStorage.setItem(
-  "userInfo",
-  JSON.stringify(res.data.data)
-);
-alert(res.data.message);
+
+      let user = res.data.data;
+      dispatch(setUser(user))    
+      alert(res.data.message);
       reset();
       navigate("/chat")
     } catch (error) {

@@ -2,17 +2,20 @@ import React from 'react'
 import { useContext } from 'react';
 import { useState } from 'react'
 import { ChatContext } from '../../context/ChatProvider';
+import MyProfile from './MyProfile';
+import EditProfile from './EditProfile';
+import { useSelector } from 'react-redux';
 
 const SideDrawer = () => {
 
     const [search , setSearch] = useState("");
     const[searchResult , setSearchResult] = useState([]);
     const[loading , setLoading] = useState(false);
-    const [isProfileOpen , setIsProfileOpen] = useState(false);
-     let {user} = useContext(ChatContext)
     
+     let { isProfileOpen , setIsProfileOpen , isEditOpen } = useContext(ChatContext)
+     let user = useSelector((state) => state.auth.user)
 
-
+     
   return (
     <div className='h-15 bg-white text-black p-4 rounded-xl mx-2 flex justify-between'>
 
@@ -47,28 +50,12 @@ const SideDrawer = () => {
 
 
 {/* --------------------------------------------------dropdown--------------------------------------- */}
-        {isProfileOpen && (
-        <div className="absolute right-0 top-14 w-48 bg-white rounded-xl shadow-lg border p-2 z-50">
-
-          <div className="px-3 py-2 hover:bg-gray-100 rounded-lg cursor-pointer flex items-center gap-2">
-            <i className="ri-user-line"></i>
-            Profile
-          </div>
-
-          <div className="px-3 py-2 hover:bg-gray-100 rounded-lg cursor-pointer flex items-center gap-2">
-            <i className="ri-settings-3-line"></i>
-            Settings
-          </div>
-
-          <div className="px-3 py-2 hover:bg-red-50 text-red-500 rounded-lg cursor-pointer flex items-center gap-2">
-            <i className="ri-logout-box-r-line"></i>
-            Logout
-          </div>
-
-        </div>
-      )}
-
-
+    {
+      isProfileOpen && <MyProfile />
+    }
+    {
+      isEditOpen && <EditProfile />
+    }
        
       
     </div>

@@ -5,6 +5,7 @@ import { useState } from 'react'
 import Register from './auth/Register'
 import { useNavigate } from 'react-router'
 import { useEffect } from 'react'
+import { useSelector } from 'react-redux'
 
 const HomePage = () => {
 
@@ -13,13 +14,13 @@ const HomePage = () => {
 
     const navigate = useNavigate();
 
-    useEffect(()=>{
-      const user = JSON.parse(localStorage.getItem("userInfo"));
+    const {isAuthenticated} = useSelector((state) => state.auth)
 
-      if(user){
-        navigate("/chat")
-      }
-    },[navigate])
+    useEffect(()=>{
+     if (isAuthenticated) {
+      navigate("/chat");
+    }
+    },[isAuthenticated, navigate])
   return (
     <div className='min-h-screen flex justify-center items-center bg-cover bg-center' style={{ backgroundImage: `url(${bgImage})` }}>
       <div className='flex flex-col items-center gap-3  '>

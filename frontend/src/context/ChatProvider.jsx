@@ -8,18 +8,11 @@ export const ChatContext = createContext()
 
 export const ChatProvider = ({children})=>{ 
     
-    const [user ,setUser] = useState();
+   
+    
 
-    const navigate =useNavigate();
-
-    useEffect(()=>{
-        const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-        setUser(userInfo);
-
-        if(!userInfo){
-            navigate("/")
-        }
-    } , [navigate]);
+    const [isProfileOpen , setIsProfileOpen] = useState(false);
+    const [isEditOpen , setIsEditOpen] = useState(false);
 
 
 
@@ -33,7 +26,7 @@ export const ChatProvider = ({children})=>{
 
 
       return (
-      <ChatContext.Provider value={{user ,setUser}}>{children}</ChatContext.Provider>
+      <ChatContext.Provider value={{ isProfileOpen , setIsProfileOpen , isEditOpen , setIsEditOpen}}>{children}</ChatContext.Provider>
       )
 }
 
