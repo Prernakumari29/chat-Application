@@ -13,6 +13,8 @@ export const ChatProvider = ({children})=>{
 
     const [isProfileOpen , setIsProfileOpen] = useState(false);
     const [isEditOpen , setIsEditOpen] = useState(false);
+      const [searchResult, setSearchResult] = useState([]);
+    
 
 
 
@@ -26,7 +28,7 @@ export const ChatProvider = ({children})=>{
 
 
       return (
-      <ChatContext.Provider value={{ isProfileOpen , setIsProfileOpen , isEditOpen , setIsEditOpen}}>{children}</ChatContext.Provider>
+      <ChatContext.Provider value={{ isProfileOpen , setIsProfileOpen , isEditOpen , setIsEditOpen , searchResult, setSearchResult}}>{children}</ChatContext.Provider>
       )
 }
 

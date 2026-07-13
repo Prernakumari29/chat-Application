@@ -1,12 +1,26 @@
 import React, { useContext } from "react";
 import { ChatContext } from "../../context/ChatProvider";
 import EditProfile from "./EditProfile";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import apiInstance from "../../services/Api";
+import { logout, setUser } from "../../features/authSlice";
 
 const MyProfile = () => {
 
   let { setIsProfileOpen , setIsEditOpen} = useContext(ChatContext)
   let user = useSelector((state)=> state.auth.user)
+  const dispatch = useDispatch()
+
+  const logOutUser = async()=>{
+    try {
+      const res = await apiInstance.post("/auth/logout")
+      alert(res.data.message);
+      dispatch(logout());
+
+    } catch (error) {
+      console.log(error.response?.data?.message || "something went wrong")
+    }
+  }
 
   return (
     <div className="absolute right-2 top-16 w-96 bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden z-50">
@@ -81,7 +95,8 @@ const MyProfile = () => {
           </button>
 
 
-          <button className="flex-1 border border-red-500 text-red-500 hover:bg-red-50 py-2 rounded-lg font-medium transition">
+          <button className="flex-1 border border-red-500 text-red-500 hover:bg-red-50 py-2 rounded-lg font-medium transition"
+          onClick={()=>{logOutUser(); setIsProfileOpen(false)}}>
             Logout
           </button>
 

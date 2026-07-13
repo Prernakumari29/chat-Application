@@ -153,6 +153,29 @@ const UpdateProfile = async(req, res)=>{
   return res
   .status(200)
   .json(new apiResponse("profile updated" , user))
+}
+
+// ------------------------------------------------get current user-------------------------------------------
+
+const getCurrentUser = async (req,res)=>{
+  res.status(200).json({
+    message:"Current user fetched succesfully",
+    data: req.user
+  })
+}
+
+// --------------------------------------------------log out---------------------------------------
+
+const logout = async(req,res)=>{
+
+  await UserModel.findByIdAndUpdate(req.user.id , {refreshToken:null})
+
+  res.clearCookie("accessToken")
+  res.clearCookie("refreshToken")
+
+  return res
+  .status(200)
+  .json(new apiResponse("logout Sucessfully"))
 
 }
 
@@ -160,6 +183,8 @@ module.exports = {
     registerUser,
     loginUser,
     searchUserController,
-    UpdateProfile
+    UpdateProfile,
+    getCurrentUser,
+    logout
     
 }
