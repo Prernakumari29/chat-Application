@@ -27,8 +27,18 @@ const accessChat = async(req,res)=>{
   })
 
   if(isChat.length > 0){
-    res.send(isChat[0])
-  }else{
+
+  await ChatModel.findByIdAndUpdate(
+    isChat[0]._id,
+    {
+      $pull:{
+        removedBy:req.user._id
+      }
+    }
+  );
+
+ return res.send(isChat[0])
+}else{
     var chatData = {
       chatName : "sender",
       isGroupChat: false,
@@ -53,7 +63,7 @@ const accessChat = async(req,res)=>{
 
 // ---------------------------------fetch chat--------------------------------------
 const fetchChat = async(req,res)=>{
-  let results = await ChatModel.find({users: {$elemMatch: {$eq:req.user._id}}})
+  let results = await ChatModel.find({users: {$elemMatch: {$eq:req.user._id}}, removedBy:{$ne:req.user._id}})
   .populate("users" , "-password")
   .populate("groupAdmin" , "-password")
   .populate("latestMessages")
@@ -67,6 +77,32 @@ const fetchChat = async(req,res)=>{
     return res
     .status(200)
     .json(new apiResponse("Chats fetched successfully" , results))
+}
+
+// -------------------------------------remove chat----------------------------------
+
+const removeChat = async(req,res) =>{
+  
+  const chat = await ChatModel.findByIdAndUpdate(
+    req.params.chatId,
+    {
+      $addToSet:{
+        removedBy:req.user._id
+      }
+    },
+    {
+      new:true
+    }
+  )
+
+   if (!chat) {
+      return res
+        .status(404)
+        .json(new apiError(404, "Chat not found"));
+    }
+  return res
+  .status(200)
+  .json(new apiResponse("chat removed successfully" , chat))
 }
 
 // -------------------------------------create groupChat-----------------
@@ -184,6 +220,7 @@ const {chatId , userId} = req.body;
 module.exports = {
   accessChat,
   fetchChat,
+  removeChat,
   groupChatController,
   rename,
   addToGroup,

@@ -22,7 +22,11 @@ const userSchema = new mongoose.Schema({
     groupAdmin:{
          type:mongoose.Schema.Types.ObjectId,
          ref:"user"
-    }
+    },
+    removedBy:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"user"
+    }]
 
 } , {timestamps:true})
 

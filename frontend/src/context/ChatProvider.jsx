@@ -14,6 +14,17 @@ export const ChatProvider = ({children})=>{
     const [isProfileOpen , setIsProfileOpen] = useState(false);
     const [isEditOpen , setIsEditOpen] = useState(false);
       const [searchResult, setSearchResult] = useState([]);
+      
+      const [isSearchOpen, setIsSearchOpen] = useState(false);
+      const [chats , setChats] = useState([]);
+      const [selectedChat , setSelectedChat] = useState(null);
+      const [isGroupOpen , setIsGroupOpen] = useState(false);
+
+
+      const [groupName, setGroupName] = useState("");
+      const [groupSearch, setGroupSearch] = useState("");
+      const [groupSearchResult, setGroupSearchResult] = useState([]);
+      const [selectedUsers, setSelectedUsers] = useState([]);
     
 
 
@@ -28,7 +39,15 @@ export const ChatProvider = ({children})=>{
 
 
       return (
-      <ChatContext.Provider value={{ isProfileOpen , setIsProfileOpen , isEditOpen , setIsEditOpen , searchResult, setSearchResult}}>{children}</ChatContext.Provider>
+      <ChatContext.Provider value={{ isProfileOpen , setIsProfileOpen , isEditOpen , setIsEditOpen , searchResult, setSearchResult ,isSearchOpen, setIsSearchOpen , chats ,setChats , selectedChat ,setSelectedChat , isGroupOpen , 
+        setIsGroupOpen,
+        groupName,setGroupName,
+        groupSearch, setGroupSearch,
+        groupSearchResult, setGroupSearchResult,
+        selectedUsers, setSelectedUsers
+
+        
+    }}>{children}</ChatContext.Provider>
       )
 }
 

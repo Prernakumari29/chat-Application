@@ -11,8 +11,7 @@ const SideDrawer = () => {
 
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  let {searchResult, setSearchResult} = useContext(ChatContext)
+  let {searchResult, setSearchResult , isSearchOpen, setIsSearchOpen} = useContext(ChatContext)
 
 
   const { 

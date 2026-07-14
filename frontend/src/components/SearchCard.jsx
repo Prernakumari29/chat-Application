@@ -1,10 +1,40 @@
 import React from 'react'
 import { useContext } from 'react'
 import { ChatContext } from '../context/ChatProvider'
+import apiInstance from '../services/Api'
 
 const SearchCard = () => {
 
-    let {searchResult, setSearchResult} = useContext(ChatContext)
+    let {searchResult, setSearchResult , chats ,setChats , selectedChat ,setSelectedChat ,  setIsSearchOpen} = useContext(ChatContext)
+
+ const accessChat = async(userId)=>{
+
+  try {
+
+    const res = await apiInstance.post("/chat", {userId});
+
+    const chat = res.data.fullchat || res.data;
+
+
+    setSelectedChat(chat);
+
+
+    setChats((prev)=>[
+      chat,
+      ...prev.filter((c)=>c._id !== chat._id)
+    ]);
+
+
+    setIsSearchOpen(false);
+
+
+  } catch(error){
+
+    console.log(error.response?.data?.message);
+
+  }
+
+}
   return (
     <>
       
@@ -14,6 +44,7 @@ const SearchCard = () => {
 
                     <div
                       key={item._id}
+                      onClick={()=>accessChat(item._id)}
                       className="flex items-center gap-3 p-3 bg-gray-100 rounded-xl mb-2 cursor-pointer hover:bg-blue-50"
                     >
 
