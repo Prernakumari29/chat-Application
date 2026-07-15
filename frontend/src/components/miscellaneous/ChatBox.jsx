@@ -1,10 +1,15 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { ChatContext } from "../../context/ChatProvider";
 import { useSelector } from "react-redux";
+import EmojiPicker from "emoji-picker-react"
+import GroupInfo from "./GroupInfo";
 
 const ChatBox = () => {
 
-  const { selectedChat } = useContext(ChatContext);
+  const [message, setMessage] = useState("");
+  const [showEmoji, setShowEmoji] = useState(false);
+
+  const { selectedChat,isGroupInfoOpen ,setIsGroupInfoOpen } = useContext(ChatContext);
 
   const user = useSelector(
     (state) => state.auth.user
@@ -21,7 +26,7 @@ const ChatBox = () => {
   if (!selectedChat) {
     return (
       <div className="
-        bg-white
+        bg-transparent
         w-full
         h-full
         rounded-2xl
@@ -29,9 +34,7 @@ const ChatBox = () => {
         items-center
         justify-center
       ">
-        <p className="text-gray-400 text-lg">
-          Select a chat to start messaging
-        </p>
+
       </div>
     );
   }
@@ -70,7 +73,7 @@ const ChatBox = () => {
 
         <img
           src={
-            sender?.pic 
+            sender?.pic
           }
           className="
           
@@ -86,8 +89,8 @@ const ChatBox = () => {
           <h2 className="text-lg font-semibold">
             {
               selectedChat.isGroupChat
-              ? selectedChat.chatName
-              : sender?.name
+                ? selectedChat.chatName
+                : sender?.name
             }
           </h2>
 
@@ -96,6 +99,40 @@ const ChatBox = () => {
           </p>
 
         </div>
+
+{/* ----------------------------eye button------------------ */}
+         {
+    selectedChat.isGroupChat && (
+
+      <button
+
+      onClick={()=>
+setIsGroupInfoOpen(!isGroupInfoOpen)
+}
+
+      className="
+      ml-auto
+      text-xl
+      hover:scale-110
+      transition
+      "
+      >
+
+        <i className="ri-more-2-line font-bold"></i>
+
+      </button>
+
+  
+
+    )
+  }
+
+      {
+isGroupInfoOpen &&
+
+<GroupInfo />
+
+}
 
 
       </div>
@@ -144,57 +181,130 @@ const ChatBox = () => {
 
       <div
         className="
-        p-3
-        px-5
-        flex
-        items-center
-        border-t
-        shrink-0
-        "
+  p-3
+  px-5
+  flex
+  items-center
+  border-t
+  shrink-0
+  "
       >
 
 
         <div
           className="
-          flex
-          w-full
-          gap-3
-          "
+    flex
+    w-full
+    gap-3
+    items-center
+    "
         >
 
 
-          <input
+          {/* Input Box */}
 
-            type="text"
-
-            placeholder="Type a message..."
-
+          <div
             className="
-            flex-1
-            border
-            border-gray-300
-            rounded-full
-            px-5
-            py-3
-            outline-none
-            focus:ring-2
-            focus:ring-blue-300
-            "
+      flex-1
+      relative
+      "
+          >
 
-          />
+            <input
 
+              type="text"
+
+              value={message}
+
+              onChange={(e) => setMessage(e.target.value)}
+
+              placeholder="Type a message..."
+
+              className="
+w-full
+border
+border-gray-300
+rounded-full
+px-5
+py-3
+pl-12
+outline-none
+focus:ring-2
+focus:ring-blue-300
+"
+
+            />
+
+
+            {/* Emoji Button */}
+
+            <button
+
+              onClick={() => setShowEmoji(!showEmoji)}
+
+              className="
+absolute
+left-4
+top-1/2
+-translate-y-1/2
+text-xl
+hover:scale-110
+transition
+"
+
+            >
+              <i className="ri-emoji-sticker-line"></i>
+
+            </button>
+
+            {
+              showEmoji && (
+
+                <div
+                  className="
+                           absolute
+                          bottom-14
+                          left-0
+                           z-50
+                          "
+                >
+
+                  <EmojiPicker
+
+                    onEmojiClick={(emojiData) => {
+
+                      setMessage(
+                        message + emojiData.emoji
+                      )
+
+                    }}
+
+                  />
+
+                </div>
+
+              )
+            }
+
+          </div>
+
+
+
+          {/* Send Button */}
 
           <button
             className="
-            bg-blue-500
-            text-white
-            px-7
-            rounded-full
-            hover:bg-blue-600
-            "
+      bg-blue-500
+      text-white
+      px-7
+      py-3
+      rounded-full
+      hover:bg-blue-600
+      "
           >
             Send
           </button>
+
 
 
         </div>

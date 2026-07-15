@@ -63,7 +63,7 @@ const accessChat = async(req,res)=>{
 
 // ---------------------------------fetch chat--------------------------------------
 const fetchChat = async(req,res)=>{
-  let results = await ChatModel.find({users: {$elemMatch: {$eq:req.user._id}}, removedBy:{$ne:req.user._id}})
+  let results = await ChatModel.find({users: {$elemMatch: {$eq:req.user._id}}, removedBy:{$ne:req.user._id} })
   .populate("users" , "-password")
   .populate("groupAdmin" , "-password")
   .populate("latestMessages")
@@ -117,7 +117,7 @@ const groupChatController = async(req,res)=>{
     throw new apiError(400 , "more than 2 users are required to form a group chat");
   }
 
-  users.push(req.users);
+  users.push(req.user._id);
 
   
     
@@ -125,7 +125,7 @@ const groupChatController = async(req,res)=>{
       chatName:req.body.name,
       users: users,
       isGroupChat: true,
-      groupAdmin: req.user,
+      groupAdmin: req.user._id,
     })
 
     const fullGroupChat = await ChatModel.findOne({_id : groupchat._id})
@@ -169,7 +169,7 @@ const addToGroup = async(req,res) =>{
   const added = await ChatModel.findByIdAndUpdate(
      chatId,
   {
-    $push: { users : userId},
+    $addToSet: { users : userId},
   },
   {
     new:true
@@ -188,28 +188,85 @@ const addToGroup = async(req,res) =>{
 // -------------------------------------remove from the group-------------------
 
 const removeFromGroup = async(req,res)=>{
-const {chatId , userId} = req.body;
+
+  const { chatId, userId } = req.body;
+
+
+  if(!chatId || !userId){
+    throw new apiError(
+      400,
+      "chatId and userId are required"
+    );
+  }
+
+
+  const chat = await ChatModel.findById(chatId);
+
+
+  if(!chat){
+    throw new apiError(
+      404,
+      "Chat not found"
+    );
+  }
+
+
+
+  // only admin can remove member
+
+  if(
+    chat.groupAdmin.toString() !== req.user._id.toString()
+  ){
+
+    throw new apiError(
+      403,
+      "Only admin can remove member"
+    );
+
+  }
+
+
+
+  // admin ko remove nahi kar sakte
+
+  if(
+    chat.groupAdmin.toString() === userId
+  ){
+
+    throw new apiError(
+      400,
+      "Admin cannot be removed"
+    );
+
+  }
+
+
 
   const removed = await ChatModel.findByIdAndUpdate(
-     chatId,
-  {
-    $pull: { users : userId},
-  },
-  {
-    new:true
-  }
+
+    chatId,
+
+    {
+      $pull:{
+        users:userId
+      }
+    },
+
+    {
+      new:true
+    }
+
   )
-  .populate("users" , "-password")
-  .populate("groupAdmin" , "-password")
-
-  if(!removed){
-    throw new apiError(404, "chat Not found")
-  } else{
-    res.json(removed);
-  }
+  .populate("users","-password")
+  .populate("groupAdmin","-password");
 
 
-}
+
+  return res
+  .status(200)
+  .json(removed);
+
+};
 
 
 

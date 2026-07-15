@@ -25,6 +25,8 @@ export const ChatProvider = ({children})=>{
       const [groupSearch, setGroupSearch] = useState("");
       const [groupSearchResult, setGroupSearchResult] = useState([]);
       const [selectedUsers, setSelectedUsers] = useState([]);
+      const [isGroupInfoOpen, setIsGroupInfoOpen] = useState(false);
+      const [isViewMembersOpen, setIsViewMembersOpen] = useState(false);
     
 
 
@@ -44,7 +46,9 @@ export const ChatProvider = ({children})=>{
         groupName,setGroupName,
         groupSearch, setGroupSearch,
         groupSearchResult, setGroupSearchResult,
-        selectedUsers, setSelectedUsers
+        selectedUsers, setSelectedUsers,
+        isGroupInfoOpen, setIsGroupInfoOpen,
+        isViewMembersOpen, setIsViewMembersOpen
 
         
     }}>{children}</ChatContext.Provider>
