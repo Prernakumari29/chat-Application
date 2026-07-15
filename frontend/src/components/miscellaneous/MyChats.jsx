@@ -81,7 +81,7 @@ const MyChats = () => {
 
   return (
 
-    <div className="bg-white min-h-screen w-180 p-4">
+    <div className="bg-white h-160 overflow-y-auto w-180 p-4 ">
 
 {/* ------------------------------------------my chats and create group-------------------------------------- */}
 <div className="flex items-center justify-between mb-5">

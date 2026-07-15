@@ -259,9 +259,12 @@ const CreateGroup = () => {
                     />
 
 
-                    <p className="font-medium">
+                    <div className='flex flex-col gap-1'>
+                      <p className="font-medium">
                       {user.name}
                     </p>
+                    <p className='text-gray-400'> <span className='text-gray-600 font-medium'>Email:</span> {user.email}</p>
+                    </div>
 
 
                   </div>

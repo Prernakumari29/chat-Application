@@ -12,11 +12,11 @@ const ChatPage = () => {
 
   const user = useSelector((state)=> state.auth.user)
   return (
-     <div className='min-h-screen  bg-cover bg-center' style={{ backgroundImage: `url(${bgImage})` }}>
+     <div className=' h-screen bg-cover bg-center overflow-y-hidden' style={{ backgroundImage: `url(${bgImage})` }}>
     
      <div >
        {user && <SideDrawer /> }
-       <div className='flex justify-between gap-5 p-4'>
+       <div className='flex justify-between gap-5 p-4 '>
         {user && <MyChats />}
        {user && <ChatBox />}
        <CreateGroup />
