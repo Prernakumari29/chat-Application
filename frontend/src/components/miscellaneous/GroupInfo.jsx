@@ -1,10 +1,46 @@
 import React, { useContext } from "react";
 import { ChatContext } from "../../context/ChatProvider";
 import ViewGroupMember from "./ViewGroupMember";
+import AddGroupMember from "./AddGroupMember";
+import apiInstance from "../../services/Api";
+import RenameGroup from "./RenameGroup";
 
 const GroupInfo = () => {
-  const { selectedChat, setIsGroupInfoOpen, isViewMembersOpen ,setIsViewMembersOpen } =
+  const { chats , setChats,selectedChat,setSelectedChat, setIsGroupInfoOpen, isViewMembersOpen ,setIsViewMembersOpen , isAddMemberOpen, setIsAddMemberOpen,isRenameOpen, setIsRenameOpen } =
     useContext(ChatContext);
+
+    const handleLeaveGroup = async () => {
+  const confirmLeave = window.confirm(
+    "Are you sure you want to leave and delete this group?"
+  );
+
+  if (!confirmLeave) return;
+
+    console.log("Leaving group...");
+
+  try {
+
+    await apiInstance.put("/leaveGroup", {
+      chatId: selectedChat._id,
+    });
+
+    // Chat list se remove
+    setChats(
+      chats.filter(
+        (chat) => chat._id !== selectedChat._id
+      )
+    );
+
+    // Chat close
+    setSelectedChat(null);
+
+    // Group Info close
+    setIsGroupInfoOpen(false);
+
+  } catch (error) {
+    console.log(error);
+  }
+};
 
   return (
     <div
@@ -140,6 +176,7 @@ const GroupInfo = () => {
           hover:bg-gray-100
           transition
           "
+          onClick={()=>setIsAddMemberOpen(true)}
         >
           <i className="ri-user-add-line text-lg text-green-600"></i>
 
@@ -147,6 +184,28 @@ const GroupInfo = () => {
             Add Member
           </span>
         </button>
+
+        <button
+  onClick={() => setIsRenameOpen(true)}
+  className="
+  w-full
+  flex
+  items-center
+  gap-3
+  px-4
+  py-3
+  rounded-xl
+  hover:bg-gray-100
+  transition
+  "
+>
+  <i className="ri-edit-line text-blue-500"></i>
+
+  <span className="font-medium">
+    Rename Group
+  </span>
+
+</button>
 
         <button
           className="
@@ -161,6 +220,7 @@ const GroupInfo = () => {
           text-red-600
           transition
           "
+           onClick={handleLeaveGroup}
         >
           <i className="ri-logout-box-r-line text-lg"></i>
 
@@ -173,6 +233,12 @@ const GroupInfo = () => {
 
       {
   isViewMembersOpen && <ViewGroupMember />
+}
+{
+  isAddMemberOpen && <AddGroupMember />
+}
+{
+ isRenameOpen && <RenameGroup />
 }
     </div>
   );

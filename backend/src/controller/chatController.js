@@ -268,6 +268,58 @@ const removeFromGroup = async(req,res)=>{
 
 };
 
+// -----------------------------------------------leave group------------------------------------------
+
+const leaveGroup = async (req, res) => {
+  const { chatId } = req.body;
+
+  if (!chatId) {
+    throw new apiError(400, "Chat Id is required");
+  }
+
+  // Group find karo
+  const chat = await ChatModel.findById(chatId);
+
+  if (!chat) {
+    throw new apiError(404, "Group not found");
+  }
+
+  // Current user group me hai ya nahi
+  if (!chat.users.includes(req.user._id)) {
+    throw new apiError(400, "You are not a member of this group");
+  }
+
+  // Current user ko users array se remove karo
+  chat.users = chat.users.filter(
+    (id) => id.toString() !== req.user._id.toString()
+  );
+
+  // Agar current user admin hai
+  if (chat.groupAdmin.toString() === req.user._id.toString()) {
+
+    // Agar group me koi member nahi bacha
+    if (chat.users.length === 0) {
+
+      await ChatModel.findByIdAndDelete(chat._id);
+
+      return res.status(200).json({
+        message: "Group deleted successfully",
+      });
+
+    }
+
+    // Pehle remaining member ko admin bana do
+    chat.groupAdmin = chat.users[0];
+  }
+
+  await chat.save();
+
+  const updatedGroup = await ChatModel.findById(chat._id)
+    .populate("users", "-password")
+    .populate("groupAdmin", "-password");
+
+  return res.status(200).json(updatedGroup);
+};
 
 
 
@@ -281,5 +333,6 @@ module.exports = {
   groupChatController,
   rename,
   addToGroup,
-  removeFromGroup
+  removeFromGroup,
+  leaveGroup
 }

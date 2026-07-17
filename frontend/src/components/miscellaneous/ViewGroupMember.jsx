@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { ChatContext } from "../../context/ChatProvider";
 import apiInstance from "../../services/Api";
+import { useSelector } from "react-redux";
 
 const ViewGroupMember = () => {
 
@@ -9,6 +10,11 @@ const ViewGroupMember = () => {
     setSelectedChat,
     setIsViewMembersOpen
   } = useContext(ChatContext);
+
+  let auth = useSelector((state)=>state.auth);
+
+let user = auth.user;
+console.log(user)
 
 
   const handleRemoveMember = async (userId) => {
@@ -36,6 +42,8 @@ const ViewGroupMember = () => {
   }
 
 };
+
+
 
 
   return (
@@ -212,10 +220,12 @@ const ViewGroupMember = () => {
               {/* Remove Button */}
 
               {
-
+                selectedChat?.groupAdmin?._id === user?._id &&
                 selectedChat?.groupAdmin?._id !== member._id &&
 
+
                 <button
+
 
                   className="
                   w-9
@@ -234,6 +244,7 @@ const ViewGroupMember = () => {
                 </button>
 
               }
+         
 
 
 
@@ -253,6 +264,7 @@ const ViewGroupMember = () => {
   );
 
 };
+
 
 
 export default ViewGroupMember;
