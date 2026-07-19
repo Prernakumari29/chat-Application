@@ -2,10 +2,11 @@ const ChatModel = require("../models/chatModel");
 const UserModel = require("../models/userModel");
 const apiError = require("../utils/apiError");
 const apiResponse = require("../utils/apiResponse");
+const asyncHandler = require("../utils/asyncHandler");
 
 
 // --------------------------------------------accessChat---------------------------------------
-const accessChat = async(req,res)=>{
+const accessChat = asyncHandler(async(req,res)=>{
   let { userId} = req.body;
 
   if(!userId){
@@ -59,10 +60,10 @@ const accessChat = async(req,res)=>{
       message:"something went wrong"
     })
   }
-}
+})
 
 // ---------------------------------fetch chat--------------------------------------
-const fetchChat = async(req,res)=>{
+const fetchChat = asyncHandler(async(req,res)=>{
   let results = await ChatModel.find({users: {$elemMatch: {$eq:req.user._id}}, removedBy:{$ne:req.user._id} })
   .populate("users" , "-password")
   .populate("groupAdmin" , "-password")
@@ -77,11 +78,11 @@ const fetchChat = async(req,res)=>{
     return res
     .status(200)
     .json(new apiResponse("Chats fetched successfully" , results))
-}
+})
 
 // -------------------------------------remove chat----------------------------------
 
-const removeChat = async(req,res) =>{
+const removeChat = asyncHandler(async(req,res) =>{
   
   const chat = await ChatModel.findByIdAndUpdate(
     req.params.chatId,
@@ -103,11 +104,11 @@ const removeChat = async(req,res) =>{
   return res
   .status(200)
   .json(new apiResponse("chat removed successfully" , chat))
-}
+})
 
 // -------------------------------------create groupChat-----------------
 
-const groupChatController = async(req,res)=>{
+const groupChatController = asyncHandler(async(req,res)=>{
   if(!req.body.users || !req.body.name){
     throw new apiError(400,"please fill all the fields")
   }
@@ -137,11 +138,11 @@ const groupChatController = async(req,res)=>{
       .json({
         fullGroupChat
       })
-}
+})
 
 // ------------------------------------------------rename route-----------------------------------
 
-const rename = async(req,res)=>{
+const rename = asyncHandler(async(req,res)=>{
   const {chatId , chatName} = req.body;
 
   const updatedChat = await ChatModel.findByIdAndUpdate(
@@ -160,10 +161,10 @@ const rename = async(req,res)=>{
   } else{
     res.json(updatedChat);
   }
-}
+})
 
 // --------------------------------------------------add to group---------------------------
-const addToGroup = async(req,res) =>{
+const addToGroup = asyncHandler(async(req,res) =>{
   const {chatId , userId} = req.body;
 
   const added = await ChatModel.findByIdAndUpdate(
@@ -183,11 +184,11 @@ const addToGroup = async(req,res) =>{
   } else{
     res.json(added);
   }
-}
+})
 
 // -------------------------------------remove from the group-------------------
 
-const removeFromGroup = async(req,res)=>{
+const removeFromGroup = asyncHandler(async(req,res)=>{
 
   const { chatId, userId } = req.body;
 
@@ -266,11 +267,11 @@ const removeFromGroup = async(req,res)=>{
   .status(200)
   .json(removed);
 
-};
+})
 
 // -----------------------------------------------leave group------------------------------------------
 
-const leaveGroup = async (req, res) => {
+const leaveGroup = asyncHandler(async (req, res) => {
   const { chatId } = req.body;
 
   if (!chatId) {
@@ -319,7 +320,7 @@ const leaveGroup = async (req, res) => {
     .populate("groupAdmin", "-password");
 
   return res.status(200).json(updatedGroup);
-};
+})
 
 
 

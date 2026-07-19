@@ -44,7 +44,7 @@ const sendMessage = asyncHandler(async(req, res)=>{
 
 })
 
-
+// --------------------------------------------all messages----------------------------------------------------------
 const allMessages = asyncHandler(async(req,res)=>{
 
     const messages = await MessageModel.find({chat : req.params.chatId})
