@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const http = require("http")
 const chats = require("./src/data/data")
 const cors = require("cors");
 const connected = require("./src/config/db");
@@ -10,23 +11,59 @@ const chatRoute = require("./src/routes/chatRoutes")
 const messageRoutes = require("./src/routes/messageRoute")
 const cookieParser = require("cookie-parser")
 
+const {Server} = require("socket.io")
+
 const app = express();
+const server = http.createServer(app);
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({extended:true}))
 
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 
-app.use(cors({
-    origin:"http://localhost:5173",
+const io = new Server(server , {
+    pingTimeout:60000,
+    cors:{
+       origin:"http://localhost:5173",
     credentials:true
-}))
+    }
+})
+
+io.on("connection" , (socket)=>{
+   console.log("connected to socket.io")
+
+   socket.on("setup", (userData)=>{
+      socket.join(userData._id);
+      socket.emit("connected");
+   });
+
+   socket.on("join chat" , (room)=>{
+      socket.join(room);
+      console.log("user join Room" , room)
+   });
+
+   socket.on("new message" , (newMessageRecieved)=>{
+
+      var chat = newMessageRecieved.chat;
+
+      if(!chat.users) return console.log("chat.users is not defined")
+
+      chat.users.forEach(user => {
+        if(user._id == newMessageRecieved.sender._id) return ;
+
+        socket.in(user._id).emit("message received" , newMessageRecieved)
+      })  
+   })
+})
+
+
 
 connected();
-
-
-app.get("/api/chats" , (req , res)=>{
-    res.send(chats)
-})
 
 app.use("/api/auth" , authRoutes)
 app.use("/api", ImageRoute)
@@ -36,6 +73,6 @@ app.use("/api/message" , messageRoutes)
 
 app.use(errormiddleware)
 const port = process.env.PORT || 8000;
-app.listen(port , ()=>{
+server.listen(port , ()=>{
     console.log("server is running on the port" , port);
 })

@@ -4,6 +4,10 @@ import { useSelector } from "react-redux";
 import EmojiPicker from "emoji-picker-react";
 import GroupInfo from "./GroupInfo";
 import apiInstance from "../../services/Api";
+import io from "socket.io-client";
+
+const ENDPOINT = "http://localhost:3000";
+var socket , selectedChatCompare
 
 const ChatBox = () => {
 
@@ -12,6 +16,8 @@ const ChatBox = () => {
 
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [socketConnected , setSocketConnected] = useState(false);
+  const [typing , setTyping] = useState(false)
 
   const messageEndRef = useRef(null);
 
@@ -60,6 +66,8 @@ const ChatBox = () => {
 
       setLoading(false);
 
+      socket.emit("join chat" , selectedChat._id);
+
 
     }catch(error){
 
@@ -71,13 +79,31 @@ const ChatBox = () => {
 
   };
 
+  useEffect(() => {
+   socket = io(ENDPOINT);
+   socket.emit("setup" , user);
+   socket.on("connection",()=>setSocketConnected(true))
+},[])
+
 
 
   useEffect(()=>{
 
     fetchMessages();
+    selectedChatCompare = selectedChat;
 
   },[selectedChat]);
+
+  useEffect(()=>{
+    socket.on("message received" , (newMessageRecieved)=>{
+       if(!selectedChatCompare || selectedChatCompare._id !== newMessageRecieved.chat._id){
+        //notification
+       }
+       else{
+        setMessages([...messages, newMessageRecieved])
+       }
+    })
+  })
 
 
   useEffect(()=>{
@@ -114,6 +140,8 @@ setMessages((prev)=>[
  data
 ]);
 
+socket.emit("new message" , data)
+
 
 setMessage("");
 
@@ -127,6 +155,9 @@ console.log(error);
 
 
 };
+
+
+
 
 
 
