@@ -18,6 +18,7 @@ const ChatBox = () => {
   const [loading, setLoading] = useState(false);
   const [socketConnected , setSocketConnected] = useState(false);
   const [typing , setTyping] = useState(false)
+  const [istyping , setIstyping] = useState(false)
 
   const messageEndRef = useRef(null);
 
@@ -82,7 +83,10 @@ const ChatBox = () => {
   useEffect(() => {
    socket = io(ENDPOINT);
    socket.emit("setup" , user);
-   socket.on("connection",()=>setSocketConnected(true))
+   socket.on("connected",()=>setSocketConnected(true))
+   socket.on("typing" , ()=>setIstyping(true) )
+   socket.on("stop typing" , ()=>setIstyping(false) )
+
 },[])
 
 
@@ -122,6 +126,7 @@ const ChatBox = () => {
 
 
 if(!message.trim()) return;
+socket.emit("stop typing" , selectedChat._id)
 
 
 try{
@@ -192,6 +197,31 @@ console.log(error);
   const sender = getSender(
     selectedChat.users
   );
+
+  // ---------------------------------------typing Indicator------------------------------------------
+
+  const typingHandler = (e)=>{
+    setMessage(e.target.value)
+    if(! socketConnected) return;
+
+    if(!typing){
+      setTyping(true);
+      socket.emit("typing" , selectedChat._id)
+    }
+
+    let lastTypingTime = new Date().getTime();
+    var timerLength = 3000;
+
+    setTimeout(() => {
+      var timeNow = new Date().getTime();
+      var timeDiff = timeNow - lastTypingTime;
+
+      if(timeDiff >= timerLength && typing){
+        socket.emit("stop typing" , selectedChat._id);
+        setTyping(false)
+      }
+    }, timerLength);
+  }
 
 
 
@@ -536,7 +566,7 @@ console.log(error);
 
 
 
-
+      {istyping ? <div>loading</div> : <></>}
 
       {/* INPUT */}
 
@@ -588,7 +618,7 @@ console.log(error);
 
             value={message}
 
-            onChange={(e)=>setMessage(e.target.value)}
+            onChange={typingHandler}
 
 onKeyDown={(e)=>{
 
