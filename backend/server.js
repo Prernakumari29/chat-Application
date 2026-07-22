@@ -34,12 +34,19 @@ const io = new Server(server , {
     }
 })
 
+const onlineUsers = {};
+
 io.on("connection" , (socket)=>{
    console.log("connected to socket.io")
 
    socket.on("setup", (userData)=>{
       socket.join(userData._id);
+
+      onlineUsers[userData._id] = socket.id;
+      io.emit("online users" , Object.keys(onlineUsers));
+
       socket.emit("connected");
+
    });
 
    socket.on("join chat" , (room)=>{
@@ -63,6 +70,26 @@ io.on("connection" , (socket)=>{
         socket.in(user._id).emit("message received" , newMessageRecieved)
       })  
    })
+
+   socket.on("disconnect", () => {
+
+  console.log("User Disconnected");
+
+  for (let userId in onlineUsers) {
+
+    if (onlineUsers[userId] === socket.id) {
+
+      delete onlineUsers[userId];
+      break;
+
+    }
+
+  }
+
+  io.emit("online users", Object.keys(onlineUsers));
+
+})
+
 })
 
 

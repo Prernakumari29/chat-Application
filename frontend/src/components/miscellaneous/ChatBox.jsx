@@ -5,6 +5,8 @@ import EmojiPicker from "emoji-picker-react";
 import GroupInfo from "./GroupInfo";
 import apiInstance from "../../services/Api";
 import io from "socket.io-client";
+import Lottie from "lottie-react"
+import typingAnimation from "../../Annimation/Typing.json"
 
 const ENDPOINT = "http://localhost:3000";
 var socket , selectedChatCompare
@@ -19,6 +21,7 @@ const ChatBox = () => {
   const [socketConnected , setSocketConnected] = useState(false);
   const [typing , setTyping] = useState(false)
   const [istyping , setIstyping] = useState(false)
+  const [onlineUsers, setOnlineUsers] = useState([]);
 
   const messageEndRef = useRef(null);
 
@@ -86,6 +89,7 @@ const ChatBox = () => {
    socket.on("connected",()=>setSocketConnected(true))
    socket.on("typing" , ()=>setIstyping(true) )
    socket.on("stop typing" , ()=>setIstyping(false) )
+   socket.on("online users", (users) => {setOnlineUsers(users)});
 
 },[])
 
@@ -197,6 +201,7 @@ console.log(error);
   const sender = getSender(
     selectedChat.users
   );
+  const isOnline = onlineUsers.includes(sender?._id);
 
   // ---------------------------------------typing Indicator------------------------------------------
 
@@ -304,12 +309,20 @@ console.log(error);
 
           </h2>
 
-
-          <p className="text-sm text-green-500">
-
-            online
-
-          </p>
+{/* ----------------------------------------online/offline features-------------------------------------- */}
+         {
+  !selectedChat.isGroupChat && (
+    <p
+      className={`text-sm ${
+        isOnline
+          ? "text-green-500"
+          : "text-gray-400"
+      }`}
+    >
+      {isOnline ? "Online" : "Offline"}
+    </p>
+  )
+}
 
 
         </div>
@@ -375,7 +388,6 @@ console.log(error);
 
 
       {/* MESSAGE AREA */}
-
 
 
       <div
@@ -566,7 +578,14 @@ console.log(error);
 
 
 
-      {istyping ? <div>loading</div> : <></>}
+      {istyping ? <div>
+        <Lottie
+        animationData={typingAnimation}
+        loop={true}
+        autoPlay={true}
+        className="w-20 h-8"
+           />
+      </div> : <></>}
 
       {/* INPUT */}
 
@@ -642,7 +661,7 @@ onKeyDown={(e)=>{
             border
             border-gray-300
             rounded-full
-            px-5
+            px-3
             py-3
             pl-12
             outline-none
