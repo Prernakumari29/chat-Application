@@ -11,7 +11,8 @@ const SideDrawer = () => {
 
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
-  let {searchResult, setSearchResult , isSearchOpen, setIsSearchOpen} = useContext(ChatContext)
+  const [showNotification, setShowNotification] = useState(false);
+  let {searchResult, setSearchResult , isSearchOpen, setIsSearchOpen,notification,selectedChat,setSelectedChat , setNotification} = useContext(ChatContext)
 
 
   const { 
@@ -123,8 +124,139 @@ const SideDrawer = () => {
       <div className="flex gap-2.5 items-center">
 
 
-        <i className="ri-notification-2-fill text-2xl"></i>
+       {/* ----------------------notification------------------------------ */}
+<div className="relative">
 
+  <button
+    onClick={() => setShowNotification(!showNotification)}
+    className="relative"
+  >
+
+    <i className="ri-notification-2-fill text-2xl text-gray-700 hover:text-blue-500 transition"></i>
+
+
+    {
+      notification.length > 0 && (
+        <span
+          className="
+          absolute
+          -top-1
+          -right-1
+          bg-red-500
+          text-white
+          text-[10px]
+          w-5
+          h-5
+          rounded-full
+          flex
+          items-center
+          justify-center
+          "
+        >
+          {notification.length}
+        </span>
+      )
+    }
+
+
+  </button>
+
+
+  {
+    showNotification && (
+
+      <div
+        className="
+        absolute
+        right-0
+        top-10
+        w-80
+        bg-white
+        shadow-lg
+        rounded-lg
+        border
+        z-50
+        "
+      >
+
+        {
+          notification.length === 0 ? (
+
+            <p className="p-4 text-center text-gray-500">
+              No new messages
+            </p>
+
+          ) : (
+
+            notification.map((msg)=>(
+
+              <div
+                key={msg._id}
+
+                onClick={() => {
+
+                  setSelectedChat(msg.chat);
+
+                  setNotification((prev)=>
+                    prev.filter(
+                      (item)=> item._id !== msg._id
+                    )
+                  );
+
+                  setShowNotification(false);
+
+                }}
+
+                className="
+                flex
+                gap-3
+                p-3
+                border-b
+                hover:bg-gray-100
+                cursor-pointer
+                "
+              >
+
+                <img
+                  src={msg.sender.pic}
+                  className="
+                  w-10
+                  h-10
+                  rounded-full
+                  object-cover
+                  "
+                />
+
+
+                <div>
+
+                  <p className="font-semibold">
+                    {msg.sender.name}
+                  </p>
+
+                  <p className="text-sm text-gray-500">
+                    {msg.content}
+                  </p>
+
+                </div>
+
+
+              </div>
+
+            ))
+
+          )
+
+        }
+
+
+      </div>
+
+    )
+
+  }
+
+</div>
 
         <div className="flex items-center">
 

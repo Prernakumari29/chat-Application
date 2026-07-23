@@ -29,7 +29,9 @@ const ChatBox = () => {
   const {
     selectedChat,
     isGroupInfoOpen,
-    setIsGroupInfoOpen
+    setIsGroupInfoOpen,
+    notification , setNotification,
+    chats , setChats
   } = useContext(ChatContext);
 
 
@@ -102,16 +104,49 @@ const ChatBox = () => {
 
   },[selectedChat]);
 
-  useEffect(()=>{
-    socket.on("message received" , (newMessageRecieved)=>{
-       if(!selectedChatCompare || selectedChatCompare._id !== newMessageRecieved.chat._id){
-        //notification
-       }
-       else{
-        setMessages([...messages, newMessageRecieved])
-       }
-    })
-  })
+ 
+
+
+
+ useEffect(() => {
+
+  socket.on("message received", (newMessageReceived) => {
+
+    if (
+      !selectedChatCompare ||
+      selectedChatCompare._id !== newMessageReceived.chat._id
+    ) {
+// ------------------------------------------notification-----------------------------------------------------------
+      setNotification((prev) => {
+
+        const alreadyExists = prev.some(
+          (msg) => msg._id === newMessageReceived._id
+        );
+
+        if (alreadyExists) return prev;
+
+        return [newMessageReceived, ...prev];
+
+      });
+
+      // fetchChats();
+
+    } else {
+
+      setMessages((prev) => [
+        ...prev,
+        newMessageReceived,
+      ]);
+
+    }
+
+  });
+
+  return () => {
+    socket.off("message received");
+  };
+
+}, []);
 
 
   useEffect(()=>{

@@ -29,6 +29,7 @@ export const ChatProvider = ({children})=>{
       const [isViewMembersOpen, setIsViewMembersOpen] = useState(false);
       const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
       const [isRenameOpen, setIsRenameOpen] = useState(false);
+      const [notification , setNotification] = useState([])
     
 
 
@@ -52,7 +53,8 @@ export const ChatProvider = ({children})=>{
         isGroupInfoOpen, setIsGroupInfoOpen,
         isViewMembersOpen, setIsViewMembersOpen,
         isAddMemberOpen, setIsAddMemberOpen,
-        isRenameOpen, setIsRenameOpen
+        isRenameOpen, setIsRenameOpen,
+        notification , setNotification
 
         
     }}>{children}</ChatContext.Provider>
