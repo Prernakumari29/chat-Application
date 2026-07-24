@@ -12,14 +12,12 @@ const SideDrawer = () => {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
-  let {searchResult, setSearchResult , isSearchOpen, setIsSearchOpen,notification,selectedChat,setSelectedChat , setNotification} = useContext(ChatContext)
-
-
-  const { 
-    isProfileOpen, 
+  let {chats , setChats, searchResult, setSearchResult , isSearchOpen, setIsSearchOpen,notification,selectedChat,setSelectedChat , setNotification , isProfileOpen, 
     setIsProfileOpen, 
-    isEditOpen 
-  } = useContext(ChatContext);
+    isEditOpen } = useContext(ChatContext)
+
+
+
 
 
   const user = useSelector((state)=>state.auth.user);
@@ -69,6 +67,67 @@ const SideDrawer = () => {
 
   },[search]);
 
+  // ----------------------------notification-------------------------------------
+  const fetchNotification = async()=>{
+    try {
+      const {data} = await apiInstance.get("/notification")
+      setNotification(data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+useEffect(()=>{
+  fetchNotification();
+},[])
+
+// ----------------------------------handle notification click---------------------------
+
+const handleNotificationClick = async (item) => {
+
+  try {
+
+    // Notification read mark
+    await apiInstance.put(`/notification/read/${item.chat._id}`);
+
+    // Chat open
+     const {data} = await apiInstance.post(
+      "/chat",
+      {
+        userId:item.sender._id
+      }
+   );
+
+
+   setSelectedChat(data);
+
+
+   setChats((prev)=>{
+
+      const exists = prev.some(
+        chat=>chat._id === data._id
+      );
+
+      if(exists) return prev;
+
+      return [
+        data,
+        ...prev
+      ];
+
+   });
+
+    // Notification remove
+    setNotification((prev) =>
+      prev.filter((n) => n._id !== item._id)
+    );
+
+    setShowNotification(false);
+
+  } catch (error) {
+    console.log(error);
+  }
+
+};
 
 
 
@@ -193,19 +252,7 @@ const SideDrawer = () => {
               <div
                 key={msg._id}
 
-                onClick={() => {
-
-                  setSelectedChat(msg.chat);
-
-                  setNotification((prev)=>
-                    prev.filter(
-                      (item)=> item._id !== msg._id
-                    )
-                  );
-
-                  setShowNotification(false);
-
-                }}
+                 onClick={() => handleNotificationClick(msg)}
 
                 className="
                 flex
@@ -230,12 +277,37 @@ const SideDrawer = () => {
 
                 <div>
 
-                  <p className="font-semibold">
-                    {msg.sender.name}
-                  </p>
+                  <div className="flex items-center gap-2">
+
+<p className="font-semibold">
+ {msg.sender?.name}
+</p>
+
+
+{
+ msg.count > 1 &&
+
+<span className="
+bg-blue-500
+text-white
+text-xs
+px-2
+py-1
+rounded-full
+">
+
+{msg.count}
+
+</span>
+
+}
+
+</div>
+
+                  
 
                   <p className="text-sm text-gray-500">
-                    {msg.content}
+                    {msg.content?.content}
                   </p>
 
                 </div>

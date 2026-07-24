@@ -107,29 +107,26 @@ const ChatBox = () => {
  
 
 
+useEffect(() => {
 
- useEffect(() => {
-
-  socket.on("message received", (newMessageReceived) => {
+  const handleMessageReceived = async (newMessageReceived) => {
 
     if (
       !selectedChatCompare ||
       selectedChatCompare._id !== newMessageReceived.chat._id
     ) {
-// ------------------------------------------notification-----------------------------------------------------------
-      setNotification((prev) => {
 
-        const alreadyExists = prev.some(
-          (msg) => msg._id === newMessageReceived._id
-        );
+      try {
 
-        if (alreadyExists) return prev;
+        const { data } = await apiInstance.get("/notification");
 
-        return [newMessageReceived, ...prev];
+        setNotification(data);
 
-      });
+      } catch (error) {
 
-      // fetchChats();
+        console.log(error);
+
+      }
 
     } else {
 
@@ -140,13 +137,15 @@ const ChatBox = () => {
 
     }
 
-  });
-
-  return () => {
-    socket.off("message received");
   };
 
-}, []);
+  socket.on("message received", handleMessageReceived);
+
+  return () => {
+    socket.off("message received", handleMessageReceived);
+  };
+
+}, [selectedChatCompare]);
 
 
   useEffect(()=>{
@@ -543,7 +542,6 @@ console.log(error);
           py-2
           rounded-2xl
           shadow-sm
-          break-words
           ${
             isMyMessage
               ? "bg-blue-500 text-white rounded-br-none"

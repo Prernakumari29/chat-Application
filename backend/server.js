@@ -8,6 +8,7 @@ const errormiddleware = require("./src/middleware/error.middleware");
 const authRoutes = require("./src/routes/userRoutes")
 const ImageRoute = require("./src/routes/imageRoutes")
 const chatRoute = require("./src/routes/chatRoutes")
+const notificationRoute = require("./src/routes/NotificationRoutes")
 const messageRoutes = require("./src/routes/messageRoute")
 const cookieParser = require("cookie-parser")
 
@@ -100,6 +101,7 @@ app.use("/api/auth" , authRoutes)
 app.use("/api", ImageRoute)
 app.use("/api" , chatRoute )
 app.use("/api/message" , messageRoutes)
+app.use("/api" , notificationRoute)
 
 
 app.use(errormiddleware)

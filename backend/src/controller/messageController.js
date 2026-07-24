@@ -1,9 +1,13 @@
 const ChatModel = require("../models/chatModel");
 const MessageModel = require("../models/messageModel");
+const NotificationModel = require("../models/NotificationModel");
 const UserModel = require("../models/userModel");
 const apiError = require("../utils/apiError");
 const asyncHandler = require("../utils/asyncHandler")
 
+
+
+// -------------------------------------Send Message --------------------------------------------------------
 const sendMessage = asyncHandler(async(req, res)=>{
 
     let {content , chatId} = req.body;
@@ -32,7 +36,25 @@ const sendMessage = asyncHandler(async(req, res)=>{
 
     await ChatModel.findByIdAndUpdate(req.body.chatId , {
         latestMessages:message
-    })  
+    });
+    
+     // ---------------- Create Notifications ----------------
+
+        for (const user of message.chat.users) {
+
+            // Sender ko notification nahi bhejna
+            if (user._id.toString() === req.user._id.toString()) {
+                continue;
+            }
+
+            await NotificationModel.create({
+                sender: req.user._id,
+                receiver: user._id,
+                chat: chatId,
+                content: message._id,
+            });
+
+        }
     
     res.json(message)
 
