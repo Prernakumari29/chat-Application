@@ -5,7 +5,9 @@ import { BrowserRouter } from "react-router";
 import { ChatProvider } from './context/ChatProvider.jsx';
 import {Provider} from "react-redux"
 import { store } from './store/Store.jsx';
+import { ToastContainer } from "react-toastify"
 import AuthLoader from './components/AuthLoader.jsx';
+import "react-toastify/dist/ReactToastify.css"
 
 createRoot(document.getElementById('root')).render(
    
@@ -14,6 +16,7 @@ createRoot(document.getElementById('root')).render(
    <ChatProvider >
       <AuthLoader>
    <App />
+   <ToastContainer />
    </AuthLoader>
    </ChatProvider>
    </BrowserRouter> 

@@ -4,6 +4,7 @@ import apiInstance from "../../services/Api";
 import { useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../features/authSlice";
+import { toast } from "react-toastify";
 
 const Login = () => {
 
@@ -18,7 +19,8 @@ const Login = () => {
 
       let user = res.data.data;
       dispatch(setUser(user))    
-      alert(res.data.message);
+      // alert(res.data.message);
+      toast.success(res.data.message);
       reset();
       navigate("/chat")
     } catch (error) {

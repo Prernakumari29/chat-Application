@@ -7,6 +7,7 @@ const bcrypt = require("bcrypt");
 const { generateAccessToken, generateRefreshToken } = require("../utils/generateToken");
 const sendToImage = require("../service/storage.service");
 const ChatModel = require("../models/chatModel");
+const jwt = require("jsonwebtoken")
 
 const registerUser = asyncHandler(async(req,res)=>{
   let {name , email ,password } = req.body;
@@ -179,12 +180,51 @@ const logout = async(req,res)=>{
 
 }
 
+// ---------------------------get acess token------------------------------------
+
+const getAccessToken = asyncHandler(async(req,res)=>{
+
+  const refreshToken = req.cookies.refreshToken;
+
+  if(!refreshToken){
+    throw new apiError(401 , "unauthorized")
+  }
+
+  const decode = jwt.verify(refreshToken , process.env.REFRESHTOKEN)
+
+  const user = await UserModel.findById(decode.id);
+
+  if(!user){
+    throw new apiError(404 , "user not found");
+  }
+
+  if(refreshToken != user.refreshToken){
+    throw new apiError(401 , "unauthorized request")
+  }
+
+  let accessToken = generateAccessToken(user._id)
+
+  res.cookie("accessToken",accessToken , {
+        httpOnly:true,
+        sameSite:"lax",
+        secure:false,
+        maxAge:15*60*1000 
+  })
+
+  return res
+  .status(200)
+  .json(new apiResponse("session refreshed successfully"))
+  
+
+})
+
 module.exports = {
     registerUser,
     loginUser,
     searchUserController,
     UpdateProfile,
     getCurrentUser,
-    logout
+    logout,
+    getAccessToken
     
 }
