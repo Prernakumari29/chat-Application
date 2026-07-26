@@ -1,6 +1,7 @@
 import React, { useContext } from 'react'
 import { ChatContext } from '../../context/ChatProvider'
 import apiInstance from '../../services/Api'
+import { toast } from 'react-toastify'
 
 const CreateGroup = () => {
 
@@ -141,7 +142,7 @@ const CreateGroup = () => {
 
   } catch(error){
 
-    console.log(error.response?.data?.message);
+    toast.error(error.response?.data?.message || "something went wrong");
 
   }
 

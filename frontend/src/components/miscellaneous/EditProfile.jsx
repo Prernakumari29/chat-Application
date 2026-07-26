@@ -4,6 +4,7 @@ import {useForm} from "react-hook-form"
 import apiInstance from "../../services/Api";
 import { useDispatch, useSelector } from "react-redux";
 import { updateUser } from "../../features/authSlice";
+import { toast } from "react-toastify";
 
 const EditProfile = () => {
 
@@ -20,13 +21,13 @@ const EditProfile = () => {
     try {
       const res = await apiInstance.patch("/auth/update-profile" , data)
       console.log(res.data)
-      alert(res.data.message)
+      toast.success(res.data.message)
 
       dispatch(updateUser(res.data.data))
       reset();
        setIsEditOpen(false);
     } catch (error) {
-      alert(error.response?.data?.message || "something went wrong")
+      toast.error(error.response?.data?.message || "something went wrong")
     }
       
   }

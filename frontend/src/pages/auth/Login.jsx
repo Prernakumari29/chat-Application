@@ -18,8 +18,7 @@ const Login = () => {
       const res = await apiInstance.post("/auth/login" , data);
 
       let user = res.data.data;
-      dispatch(setUser(user))    
-      // alert(res.data.message);
+      dispatch(setUser(user))   
       toast.success(res.data.message);
       reset();
       navigate("/chat")

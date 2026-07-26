@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {useForm} from "react-hook-form";
 import apiInstance from "../../services/Api";
+import { toast } from "react-toastify";
 
 
 const Register = () => {
@@ -12,11 +13,11 @@ const Register = () => {
   const submit = async(data)=>{
     try {
       const res = await apiInstance.post("/auth/register" , data)
-      alert(res.data.message)
+      toast.success(res.data.message)
       reset();
 
     } catch (error) {
-      alert(error.res?.data?.message || "something went wrong")
+      toast.error(error.res?.data?.message || "something went wrong")
     }
   }
   return (
