@@ -164,7 +164,7 @@ const MyChats = () => {
                   onClick={(e)=>removeChat(e,chat._id)}
                   className="text-red-500 hover:text-red-700"
                 >
-                  remove
+                  <i className="ri-delete-bin-5-line text-gray-500 hover:text-red-500 cursor-pointer "></i>
                 </button>
 
 
