@@ -24,7 +24,7 @@ app.use(
   cors({
     origin:[
        "http://localhost:5173",
-      "https://chat-application-virid-eight.vercel.app/"
+      "https://chat-application-virid-eight.vercel.app"
     ],
     credentials: true,
   })
@@ -32,10 +32,13 @@ app.use(
 
 const io = new Server(server , {
     pingTimeout:60000,
-    cors:{
-       origin:"http://localhost:5173",
-    credentials:true
-    }
+    cors: {
+    origin: [
+      "http://localhost:5173",
+      "https://chat-application-virid-eight.vercel.app"
+    ],
+    credentials: true
+  }
 })
 
 const onlineUsers = {};

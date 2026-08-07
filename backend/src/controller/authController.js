@@ -45,16 +45,16 @@ const registerUser = asyncHandler(async(req,res)=>{
   await user.save();
 
   res.cookie("accessToken" , accessToken , {
-        httpOnly:true,
-        sameSite:"lax",
-        secure:false,
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
         maxAge:15*60*1000   
   })
 
   res.cookie("refreshToken" , refreshToken,{
-        httpOnly:true,
-        sameSite:"lax",
-        secure:false,
+        httpOnly: true,
+  secure: true,
+  sameSite: "none",
         maxAge:24*60*60*1000
   })
 
@@ -94,16 +94,16 @@ const loginUser = asyncHandler(async(req,res)=>{
     .select("-password -refreshToken -mobile")
 
     res.cookie("accessToken" , accessToken,{
-        httpOnly:true,
-        sameSite:"lax",
-        secure:false,
+        httpOnly: true,
+  secure: true,
+  sameSite: "none",
         maxAge:15*60*1000
     })
 
     res.cookie("refreshToken" , refreshToken , {
-        httpOnly:true,
-        sameSite:"lax",
-        secure:false,
+        httpOnly: true,
+  secure: true,
+  sameSite: "none",
         maxAge:24*60*60*1000
     })
 
@@ -205,9 +205,9 @@ const getAccessToken = asyncHandler(async(req,res)=>{
   let accessToken = generateAccessToken(user._id)
 
   res.cookie("accessToken",accessToken , {
-        httpOnly:true,
-        sameSite:"lax",
-        secure:false,
+        httpOnly: true,
+  secure: true,
+  sameSite: "none",
         maxAge:15*60*1000 
   })
 
