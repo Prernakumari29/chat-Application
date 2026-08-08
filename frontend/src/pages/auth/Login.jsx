@@ -8,17 +8,17 @@ import { toast } from "react-toastify";
 
 const Login = () => {
 
-  const [showpassword , setShowpassword] = useState(false)
-  const {handleSubmit , register , reset} = useForm();
+  const [showpassword, setShowpassword] = useState(false)
+  const { handleSubmit, register, reset } = useForm();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const submit = async(data)=>{
+  const submit = async (data) => {
     try {
-      const res = await apiInstance.post("/auth/login" , data);
+      const res = await apiInstance.post("/auth/login", data);
 
       let user = res.data.data;
-      dispatch(setUser(user))   
+      dispatch(setUser(user))
       toast.success(res.data.message);
       reset();
       navigate("/chat")
@@ -44,7 +44,7 @@ const Login = () => {
             type="email"
             placeholder="Enter your email"
             required
-            {...register("email" , {required:true})}
+            {...register("email", { required: true })}
             className="border border-gray-300 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
@@ -60,19 +60,19 @@ const Login = () => {
 
           <div className="relative w-full">
             <input
-            id="password"
-            type={showpassword?"text":"password"}
-            required
-            {...register("password" , {required:true})}
-            placeholder="Enter your password "
-            className=" w-full border border-gray-300 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          
-          {showpassword ? 
-          <i className="ri-eye-line absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer text-xl active:scale-90" onClick={()=>setShowpassword(false)}></i>          
-          :<i className="ri-eye-off-line absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer text-xl active:scale-90" onClick={()=>setShowpassword(true)}></i>
-          }
-          
+              id="password"
+              type={showpassword ? "text" : "password"}
+              required
+              {...register("password", { required: true })}
+              placeholder="Enter your password "
+              className=" w-full border border-gray-300 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
+            />
+
+            {showpassword ?
+              <i className="ri-eye-line absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer text-xl active:scale-90" onClick={() => setShowpassword(false)}></i>
+              : <i className="ri-eye-off-line absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer text-xl active:scale-90" onClick={() => setShowpassword(true)}></i>
+            }
+
           </div>
         </div>
 
@@ -83,7 +83,7 @@ const Login = () => {
           Login
         </button>
 
-       
+
       </form>
     </div>
   );

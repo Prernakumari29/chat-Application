@@ -1,50 +1,50 @@
 import axios from "axios";
 
 const apiInstance = axios.create({
-    baseURL:"http://localhost:3000/api",
-    withCredentials:true
+    baseURL: "http://localhost:3000/api",
+    withCredentials: true
 });
 
 apiInstance.interceptors.response.use(
-(response)=>response,
+    (response) => response,
 
-async(error)=>{
+    async (error) => {
 
-const originalRequest = error.config;
-
-
-// login/register par refresh mat karo
-if(
- originalRequest.url.includes("/auth/login") ||
- originalRequest.url.includes("/auth/register") ||
- originalRequest.url.includes("/auth/getAccessToken")
-){
-    return Promise.reject(error);
-}
+        const originalRequest = error.config;
 
 
-if(
- error.response?.status === 401 &&
- !originalRequest._retry
-){
+        // login/register par refresh mat karo
+        if (
+            originalRequest.url.includes("/auth/login") ||
+            originalRequest.url.includes("/auth/register") ||
+            originalRequest.url.includes("/auth/getAccessToken")
+        ) {
+            return Promise.reject(error);
+        }
 
-    originalRequest._retry = true;
 
-    try{
+        if (
+            error.response?.status === 401 &&
+            !originalRequest._retry
+        ) {
 
-        await apiInstance.get("/auth/getAccessToken");
+            originalRequest._retry = true;
 
-        return apiInstance(originalRequest);
+            try {
 
-    }catch(err){
+                await apiInstance.get("/auth/getAccessToken");
 
-        console.log("Refresh token expired");
+                return apiInstance(originalRequest);
 
-    }
-}
+            } catch (err) {
 
-return Promise.reject(error);
+                console.log("Refresh token expired");
 
-})
+            }
+        }
+
+        return Promise.reject(error);
+
+    })
 
 export default apiInstance;

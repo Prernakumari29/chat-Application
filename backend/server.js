@@ -1,6 +1,8 @@
 require("dotenv").config();
 const express = require("express");
 const http = require("http")
+// path import
+const path = require("path")
 const chats = require("./src/data/data")
 const cors = require("cors");
 const connected = require("./src/config/db");
@@ -19,6 +21,8 @@ const server = http.createServer(app);
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({extended:true}))
+// middleware static files 
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(
   cors({
@@ -105,13 +109,17 @@ socket.on("stop typing", (room) => {
 
 
 connected();
-
+// "/api" -->backend
 app.use("/api/auth" , authRoutes)
 app.use("/api", ImageRoute)
 app.use("/api" , chatRoute )
 app.use("/api/message" , messageRoutes)
 app.use("/api" , notificationRoute)
 
+// last me wildcard route banao
+app.get('{*splat}', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 app.use(errormiddleware)
 const port = process.env.PORT || 8000;
