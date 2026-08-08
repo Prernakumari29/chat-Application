@@ -23,8 +23,7 @@ app.use(express.urlencoded({extended:true}))
 app.use(
   cors({
     origin:[
-       "http://localhost:5173",
-      "https://chat-application-virid-eight.vercel.app"
+       "http://localhost:5173"
     ],
     credentials: true,
   })
@@ -35,7 +34,6 @@ const io = new Server(server , {
     cors: {
     origin: [
       "http://localhost:5173",
-      "https://chat-application-virid-eight.vercel.app"
     ],
     credentials: true
   }
@@ -61,8 +59,13 @@ io.on("connection" , (socket)=>{
       console.log("user join Room" , room)
    });
 
-   socket.on("typing" , (room)=>socket.in(room).emit("typing"))
-   socket.on("stop typing" , (room)=>socket.in(room).emit("stop typing"))
+   socket.on("typing", (room) => {
+    socket.to(room).emit("typing", room);
+});
+
+socket.on("stop typing", (room) => {
+    socket.to(room).emit("stop typing", room);
+});
 
 
    socket.on("new message" , (newMessageRecieved)=>{

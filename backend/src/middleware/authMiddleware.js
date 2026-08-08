@@ -6,6 +6,10 @@ const authMiddleware = async(req,res,next)=>{
     try {
         let accessToken = req.cookies.accessToken
 
+        if(accessToken === null){
+            throw new apiError(401, "unauthorized credentials")
+        }
+
         if(!accessToken){
             throw new apiError(401, "unauthorized credentials")
         }

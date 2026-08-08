@@ -10,16 +10,27 @@ const Register = () => {
 
 
 
-  const submit = async(data)=>{
-    try {
-      const res = await apiInstance.post("/auth/register" , data)
-      toast.success(res.data.message)
-      reset();
+ const submit = async (data) => {
+  try {
+    const formData = new FormData();
 
-    } catch (error) {
-      toast.error(error.res?.data?.message || "something went wrong")
+    formData.append("name", data.name);
+    formData.append("email", data.email);
+    formData.append("password", data.password);
+    formData.append("confirmPassword", data.confirmPassword);
+
+    if (data.image?.[0]) {
+      formData.append("image", data.image[0]);
     }
+
+    const res = await apiInstance.post("/auth/register", formData);
+
+    toast.success(res.data.message);
+    reset();
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Something went wrong");
   }
+};
   return (
     <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8">
      
@@ -121,6 +132,7 @@ const Register = () => {
           <input
             id="picture"
             type="file"
+             {...register("image")}
             accept="image/*"
             className="border border-gray-300 rounded-lg px-3 py-2 file:mr-4 file:px-4 file:py-2 file:border-0 file:rounded-lg file:bg-blue-600 file:text-white file:cursor-pointer hover:file:bg-blue-700"
           />

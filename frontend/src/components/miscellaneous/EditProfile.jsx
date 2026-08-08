@@ -19,7 +19,16 @@ const EditProfile = () => {
 
   const saveChanges = async(data)=>{
     try {
-      const res = await apiInstance.patch("/auth/update-profile" , data)
+       const formData = new FormData();
+
+        formData.append("name", data.name);
+        formData.append("email", data.email);
+
+        if(image){
+            formData.append("image", image);
+        }
+
+      const res = await apiInstance.patch("/auth/update-profile" , formData)
       console.log(res.data)
       toast.success(res.data.message)
 
@@ -85,6 +94,7 @@ const EditProfile = () => {
                   type="file"
                   accept="image/*"
                   className="hidden"
+                  {...register("image")}
                   onChange={handleImageChange}
                 />
 

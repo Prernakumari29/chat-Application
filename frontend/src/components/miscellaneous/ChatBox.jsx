@@ -24,6 +24,7 @@ const ChatBox = () => {
   const [onlineUsers, setOnlineUsers] = useState([]);
 
   const messageEndRef = useRef(null);
+  const selectedChatRef = useRef(null);
 
 
   const {
@@ -39,6 +40,10 @@ const ChatBox = () => {
   const user = useSelector(
     (state) => state.auth.user
   );
+
+  useEffect(() => {
+    selectedChatRef.current = selectedChat;
+}, [selectedChat]);
 
 
 
@@ -89,9 +94,22 @@ const ChatBox = () => {
    socket = io(ENDPOINT);
    socket.emit("setup" , user);
    socket.on("connected",()=>setSocketConnected(true))
-   socket.on("typing" , ()=>setIstyping(true) )
-   socket.on("stop typing" , ()=>setIstyping(false) )
+   socket.on("typing", (room) => {
+      if(selectedChatRef.current?._id === room){
+            setIstyping(true);
+        }
+
+});
+   socket.on("stop typing", (room) => {
+    if(selectedChatRef.current?._id === room){
+            setIstyping(false);
+        }
+});
    socket.on("online users", (users) => {setOnlineUsers(users)});
+
+    return () => {
+        socket.disconnect();
+    };
 
 },[])
 

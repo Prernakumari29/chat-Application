@@ -9,10 +9,11 @@ const sendToImage = require("../service/storage.service");
 const ChatModel = require("../models/chatModel");
 const jwt = require("jsonwebtoken")
 
+// -------------------------------------------------register----------------------------------------
+
 const registerUser = asyncHandler(async(req,res)=>{
   let {name , email ,password } = req.body;
-  let file = req.file;
-
+  let file = req.file
   if(!name || !email || !password){
     throw new apiError(400 , "all fields are required")
   }
@@ -23,10 +24,11 @@ const registerUser = asyncHandler(async(req,res)=>{
   }
 
   let imageUrl = "";
-
+ 
   if(file){
     const uploadImage = await sendToImage(file.buffer , file.originalname)
     imageUrl = uploadImage.url;
+    console.log(uploadImage)
   }
   
 
@@ -35,7 +37,7 @@ const registerUser = asyncHandler(async(req,res)=>{
     name ,
     email,
     password:hashpass,
-    ...(imageUrl && { pic: imageUrl })
+    pic:imageUrl
   })
 
   let accessToken = generateAccessToken(user._id)
@@ -95,15 +97,15 @@ const loginUser = asyncHandler(async(req,res)=>{
 
     res.cookie("accessToken" , accessToken,{
         httpOnly: true,
-  secure: true,
-  sameSite: "none",
+        secure: true,
+        sameSite: "none",
         maxAge:15*60*1000
     })
 
     res.cookie("refreshToken" , refreshToken , {
         httpOnly: true,
-  secure: true,
-  sameSite: "none",
+        secure: true,
+        sameSite: "none",
         maxAge:24*60*60*1000
     })
 
@@ -135,25 +137,41 @@ const searchUserController = asyncHandler(async(req, res)=>{
 
 const UpdateProfile = async(req, res)=>{
 
-  const {name ,about , mobile} = req.body;
+    const {name, about, mobile} = req.body;
 
-  const updateData = {};
+    const updateData = {};
 
-  if(name) updateData.name = name;
-  if(about) updateData.about = about;
-  if(mobile) updateData.mobile = mobile;
 
-  const user = await UserModel.findByIdAndUpdate(
-    req.user._id,
-    updateData,
-    {
-      new:true
+    if(name) updateData.name = name;
+    if(about) updateData.about = about;
+    if(mobile) updateData.mobile = mobile;
+
+
+    // profile image update
+    if(req.file){
+
+        const uploadImage = await sendToImage(
+            req.file.buffer,
+            req.file.originalname
+        );
+
+        updateData.pic = uploadImage.url;
     }
-  )
 
-  return res
-  .status(200)
-  .json(new apiResponse("profile updated" , user))
+
+    const user = await UserModel.findByIdAndUpdate(
+        req.user._id,
+        updateData,
+        {
+            new:true
+        }
+    );
+
+
+    return res
+    .status(200)
+    .json(new apiResponse("profile updated", user));
+
 }
 
 // ------------------------------------------------get current user-------------------------------------------
@@ -185,6 +203,9 @@ const logout = async(req,res)=>{
 const getAccessToken = asyncHandler(async(req,res)=>{
 
   const refreshToken = req.cookies.refreshToken;
+  if(refreshToken === null){
+    console.log('null')
+  }
 
   if(!refreshToken){
     throw new apiError(401 , "unauthorized")
@@ -206,8 +227,8 @@ const getAccessToken = asyncHandler(async(req,res)=>{
 
   res.cookie("accessToken",accessToken , {
         httpOnly: true,
-  secure: true,
-  sameSite: "none",
+        secure: true,
+        sameSite: "none",
         maxAge:15*60*1000 
   })
 
