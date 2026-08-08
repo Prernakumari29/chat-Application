@@ -26,19 +26,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(
   cors({
-    origin:[
-       "http://localhost:5173"
-    ],
-    credentials: true,
+    origin: "*",
   })
 );
 
 const io = new Server(server , {
     pingTimeout:60000,
     cors: {
-    origin: [
-      "http://localhost:5173",
-    ],
+    origin: "*",
     credentials: true
   }
 })
